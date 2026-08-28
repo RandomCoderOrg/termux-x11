@@ -324,7 +324,7 @@
  
      /* If present_flip failed, we may have to requeue for the next MSC */
      if (vblank->exec_msc == crtc_msc + 1 &&
-@@ -79,12 +87,59 @@
+@@ -79,12 +87,69 @@
          return;
      }
  
@@ -373,6 +373,16 @@
 +        /* Failed to requeue for polling (e.g. OOM) - release our extra ref and treat the
 +         * presumably still in-flight GPU copy as done; same best-effort fallback as above. */
 +        lorieGpuCopyAck(vblank->pixmap, vblank->gpu_copy_dst_buffer);
++    } else if (loriePixmapRequiresGpuCopy(vblank->pixmap)) {
++        /* Imported AHardwareBuffers are not guaranteed to be CPU-mappable. If
++         * the Android renderer is detached or its queue is temporarily full,
++         * preserve the Present request until a later fake-vblank instead of
++         * entering EXA's CPU path and fatally failing PrepareAccess. */
++        if (Success == screen_priv->queue_vblank(screen, window, vblank->crtc,
++                                                 vblank->event_id, crtc_msc + 1)) {
++            vblank->queued = TRUE;
++            return;
++        }
 +    } else {
 +        present_copy_region(&window->drawable, vblank->pixmap, vblank->update, vblank->x_off, vblank->y_off);
 +
@@ -398,7 +408,7 @@
  #include <X11/X.h>
  #include "scrnintstr.h"
  #include "misc.h"
-@@ -90,8 +91,31 @@
+@@ -90,8 +91,32 @@
      Bool                abort_flip;     /* aborting this flip */
      PresentFlipReason   reason;         /* reason for which flip is not possible */
      Bool                has_suboptimal; /* whether client can support SuboptimalCopy mode */
@@ -417,6 +427,7 @@
 +                                     uint64_t *out_serial, void **out_dst_buffer);
 +extern Bool lorieGpuCopyIsDone(uint64_t serial);
 +extern void lorieGpuCopyAck(PixmapPtr pixmap, void *dst_buffer);
++extern Bool loriePixmapRequiresGpuCopy(PixmapPtr pixmap);
 +/* lorie: implemented in lorie/cmdentrypoint.c. Avoids waiting forever on a GPU copy that a dead renderer will never finish. */
 +extern bool lorieConnectionAlive(void);
 +/* lorie: implemented in lorie/InitOutput.c. Renderer can be connected but still unable to

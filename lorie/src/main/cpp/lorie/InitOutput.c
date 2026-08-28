@@ -1008,6 +1008,17 @@ Bool lorieGpuCopyIsDone(uint64_t serial) {
     return __atomic_load_n(&pvfb->state->gpuCopyQueue.completedSerial, __ATOMIC_ACQUIRE) >= serial;
 }
 
+Bool loriePixmapRequiresGpuCopy(PixmapPtr pixmap) {
+    LoriePixmapPriv *priv = pixmap ? LORIE_PIXMAP_PRIV_FROM_PIXMAP(pixmap) : NULL;
+    const LorieBuffer_Desc *desc = priv ? LorieBuffer_description(priv->buffer) : NULL;
+
+    /* Imported AHardwareBuffers are not guaranteed to be CPU-mappable. A
+     * detached Android renderer must not turn that normal lifecycle state into
+     * a CPU-copy fallback that fails PrepareAccess and terminates Xorg. */
+    return priv && priv->imported && desc &&
+           desc->type == LORIEBUFFER_AHARDWAREBUFFER;
+}
+
 void lorieGpuCopyAck(PixmapPtr pixmap, void *dst_buffer) {
     LoriePixmapPriv *priv = LORIE_PIXMAP_PRIV_FROM_PIXMAP(pixmap);
     if (priv && priv->buffer)
