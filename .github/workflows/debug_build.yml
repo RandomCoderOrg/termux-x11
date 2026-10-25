@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - panfrost/dmabuf-present
     paths-ignore:
       - '**.md'
       - 'img/**'

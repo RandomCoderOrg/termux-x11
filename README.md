@@ -1,6 +1,20 @@
 
 # Termux:X11
 
+## Panfrost fork branch
+
+The `panfrost/dmabuf-present` branch tracks upstream Termux:X11 while testing
+Panfrost's DMA-BUF Present path. It accepts an existing DMA-BUF as a GPU-copy
+source and synchronizes mapped DMA-BUF reads before GLES upload. This does not
+make `PAN_KBASE_GL_DRI3=0` GPU-present, nor does it provide zero-copy DMA-BUF
+import: the renderer still uploads FD-backed pixels to a GL texture. Use the
+branch's CI artifacts as experimental builds, not the upstream nightly.
+
+Keep the uDroid JNI bridge and embedded-only patches in uDroid. Rebase this
+branch on upstream and remove each delta once upstream provides the same
+behavior. A successful build or a clean screenshot is not GPU-offload proof;
+check the Present-copy counters on a DRI3-enabled Panfrost session.
+
 [![Nightly build](https://github.com/termux/termux-x11/actions/workflows/debug_build.yml/badge.svg?branch=master)](https://github.com/termux/termux-x11/actions/workflows/debug_build.yml) [![Join the chat at https://gitter.im/termux/termux](https://badges.gitter.im/termux/termux.svg)](https://gitter.im/termux/termux) [![Join the Termux discord server](https://img.shields.io/discord/641256914684084234?label=&logo=discord&logoColor=ffffff&color=5865F2)](https://discord.gg/HXpF69X)
 
 A [Termux](https://termux.com) X11 server add-on app.
