@@ -19,7 +19,7 @@ Pixel 6a native-Termux check (2026-10-25): Mesa 26.3-devel with
 `PAN_EXPERIMENTAL_KBASE_GL=1 PAN_KBASE_GL_DRI3=1` on display `:2` rendered
 `glxgears` as Mali-G78 Panfrost. Upstream logged `0/299` Present GPU-copy
 offloads (`299 other` CPU fallbacks); this branch logged `300/300` with 60.0
-displayed frames/s and a visible gears frame. This qualifies that workload's
+Lorie-rendered frames/s and a visible gears frame. This qualifies that workload's
 GPU-copy route, not zero-copy import or other devices and compositors.
 
 [![Nightly build](https://github.com/termux/termux-x11/actions/workflows/debug_build.yml/badge.svg?branch=master)](https://github.com/termux/termux-x11/actions/workflows/debug_build.yml) [![Join the chat at https://gitter.im/termux/termux](https://badges.gitter.im/termux/termux.svg)](https://gitter.im/termux/termux) [![Join the Termux discord server](https://img.shields.io/discord/641256914684084234?label=&logo=discord&logoColor=ffffff&color=5865F2)](https://discord.gg/HXpF69X)
