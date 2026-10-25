@@ -141,6 +141,19 @@ static LorieBuffer *lorieEnsureGpuSampleable(PixmapPtr pixmap, int8_t type) {
     return desc->type == type ? priv->buffer : NULL;
 }
 
+static LorieBuffer *lorieGpuCopySource(PixmapPtr pixmap) {
+    LoriePixmapPriv *priv = LORIE_PIXMAP_PRIV_FROM_PIXMAP(pixmap);
+    const LorieBuffer_Desc *desc;
+    if (!priv || !priv->buffer || priv->mem)
+        return NULL;
+
+    desc = LorieBuffer_description(priv->buffer);
+    if (desc->type == LORIEBUFFER_FD || desc->type == LORIEBUFFER_AHARDWAREBUFFER)
+        return priv->buffer;
+
+    return lorieEnsureGpuSampleable(pixmap, LORIEBUFFER_AHARDWAREBUFFER);
+}
+
 static Bool lorieServerDebugEnabled = FALSE;
 
 void OsVendorInit(void) {
@@ -990,7 +1003,7 @@ Bool lorieTryScheduleGpuCopy(PixmapPtr pixmap, PixmapPtr dst, RegionPtr update, 
         return FALSE;
     }
 
-    if (!(srcBuffer = lorieEnsureGpuSampleable(pixmap, LORIEBUFFER_AHARDWAREBUFFER)) ||
+    if (!(srcBuffer = lorieGpuCopySource(pixmap)) ||
         !(dstBuffer = lorieEnsureGpuSampleable(dst, LORIEBUFFER_AHARDWAREBUFFER))) {
         gpuCopyAttempts++;
         gpuCopyFallbackOther++;
