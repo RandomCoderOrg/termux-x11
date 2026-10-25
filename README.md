@@ -15,6 +15,13 @@ branch on upstream and remove each delta once upstream provides the same
 behavior. A successful build or a clean screenshot is not GPU-offload proof;
 check the Present-copy counters on a DRI3-enabled Panfrost session.
 
+Pixel 6a native-Termux check (2026-10-25): Mesa 26.3-devel with
+`PAN_EXPERIMENTAL_KBASE_GL=1 PAN_KBASE_GL_DRI3=1` on display `:2` rendered
+`glxgears` as Mali-G78 Panfrost. Upstream logged `0/299` Present GPU-copy
+offloads (`299 other` CPU fallbacks); this branch logged `300/300` with 60.0
+displayed frames/s and a visible gears frame. This qualifies that workload's
+GPU-copy route, not zero-copy import or other devices and compositors.
+
 [![Nightly build](https://github.com/termux/termux-x11/actions/workflows/debug_build.yml/badge.svg?branch=master)](https://github.com/termux/termux-x11/actions/workflows/debug_build.yml) [![Join the chat at https://gitter.im/termux/termux](https://badges.gitter.im/termux/termux.svg)](https://gitter.im/termux/termux) [![Join the Termux discord server](https://img.shields.io/discord/641256914684084234?label=&logo=discord&logoColor=ffffff&color=5865F2)](https://discord.gg/HXpF69X)
 
 A [Termux](https://termux.com) X11 server add-on app.
